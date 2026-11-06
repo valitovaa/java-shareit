@@ -9,7 +9,6 @@ import ru.practicum.shareit.user.model.User;
 import java.util.*;
 
 @Component
-@AllArgsConstructor
 public class InMemoryUserRepository implements UserRepository {
 
     private final Map<Long, User> users = new HashMap<>();

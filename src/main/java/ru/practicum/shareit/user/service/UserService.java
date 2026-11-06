@@ -12,7 +12,7 @@ public interface UserService {
 
     User addUser(User user);
 
-    User update(User newUser);
+    User update(Long userId, User newUser);
 
     User findUserById(Long id);
 

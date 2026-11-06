@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -10,9 +11,10 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ItemServiceImp implements ItemService {
 
-    ItemRepository itemRepository;
+    public final ItemRepository itemRepository;
 
     @Override
     public Item addItem(Item item) {
@@ -28,7 +30,8 @@ public class ItemServiceImp implements ItemService {
     @Override
     public Item updateItem(Long itemId, ItemDto itemDto, Long userId) {
 
-        Item item = findItemById(itemId);
+        Item item = itemRepository.findItemById(itemId)
+                .orElseThrow(() -> new NotFoundException("Предмет не найден"));
 
         if (!item.getOwner().getId().equals(userId)) {
             throw new ConditionsNotMetException("Нет прав на редактирование");

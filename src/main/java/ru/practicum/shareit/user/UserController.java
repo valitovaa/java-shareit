@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,17 +31,19 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
         User adddedUser = userService.addUser(user);
         return ResponseEntity.ok(UserMapper.map(adddedUser));
 
     }
 
-    @PutMapping
-    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto) {
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserDto> update(
+            @PathVariable Long userId,
+            @RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
-        User updatedUser = userService.update(user);
+        User updatedUser = userService.update(userId,user);
         return ResponseEntity.ok(UserMapper.map(updatedUser));
     }
 

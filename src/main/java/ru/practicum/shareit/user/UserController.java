@@ -43,7 +43,8 @@ public class UserController {
             @PathVariable Long userId,
             @RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
-        User updatedUser = userService.update(userId,user);
+        user.setId(userId);
+        User updatedUser = userService.update(userId, user);
         return ResponseEntity.ok(UserMapper.map(updatedUser));
     }
 

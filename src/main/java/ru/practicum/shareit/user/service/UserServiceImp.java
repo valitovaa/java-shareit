@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ConditionsNotMetException;
+import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -24,7 +24,7 @@ public class UserServiceImp implements UserService {
     public User addUser(User user) {
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new ConditionsNotMetException("Email уже используется");
+            throw new EmailAlreadyExistsException("Email уже используется");
         }
         return userRepository.addUser(user);
     }
@@ -37,8 +37,17 @@ public class UserServiceImp implements UserService {
 
         if (!oldUser.getEmail().equalsIgnoreCase(newUser.getEmail())
                 && userRepository.existsByEmail(newUser.getEmail())) {
-            throw new ConditionsNotMetException("Email уже используется");
+            throw new EmailAlreadyExistsException("Email уже используется");
         }
+
+        if (newUser.getName() != null) {
+            oldUser.setName(newUser.getName());
+        }
+
+        if (newUser.getEmail() != null) {
+            oldUser.setEmail(newUser.getEmail());
+        }
+
         return userRepository.update(newUser);
     }
 

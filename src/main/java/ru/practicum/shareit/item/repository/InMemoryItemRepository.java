@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class InMemoryItemRepository implements ItemRepository{
+public class InMemoryItemRepository implements ItemRepository {
 
     private final Map<Long, Item> items = new HashMap<>();
     private long currentId = 0;
@@ -19,7 +19,7 @@ public class InMemoryItemRepository implements ItemRepository{
     public Item addItem(Item item) {
 
         item.setId(getNextId());
-        items.put(item.getId(),item);
+        items.put(item.getId(), item);
 
         return item;
     }
@@ -31,12 +31,12 @@ public class InMemoryItemRepository implements ItemRepository{
 
     @Override
     public void updateItem(Item item) {
-        items.put(item.getId(),item);
+        items.put(item.getId(), item);
     }
 
     @Override
     public List<Item> findAllByOwnerId(Long userId) {
-        return  items.values().stream()
+        return items.values().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
                 .toList();
     }

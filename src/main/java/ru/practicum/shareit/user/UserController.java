@@ -30,21 +30,22 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
         User adddedUser = userService.addUser(user);
         return ResponseEntity.ok(UserMapper.map(adddedUser));
 
     }
+
     @PutMapping
-    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
         User updatedUser = userService.update(user);
-        return  ResponseEntity.ok(UserMapper.map(updatedUser));
+        return ResponseEntity.ok(UserMapper.map(updatedUser));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findUserById(@PathVariable @Positive Long id){
+    public ResponseEntity<UserDto> findUserById(@PathVariable @Positive Long id) {
         User user = userService.findUserById(id);
         return ResponseEntity.ok(UserMapper.map(user));
     }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService {
     public final UserRepository userRepository;
 
 

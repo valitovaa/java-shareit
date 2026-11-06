@@ -52,7 +52,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<ItemDto> getItemById(@PathVariable Long itemId){
+    public ResponseEntity<ItemDto> getItemById(@PathVariable Long itemId) {
         Item item = itemService.findItemById(itemId);
         return ResponseEntity.ok(ItemMapper.map(item));
     }
@@ -60,7 +60,7 @@ public class ItemController {
     @GetMapping
     public ResponseEntity<List<ItemDto>> findAllByOwnerId(
             @RequestHeader("X-Sharer-User-Id") Long userId
-    ){
+    ) {
 
         List<Item> itemList = itemService.findAllByOwnerId(userId);
         List<ItemDto> itemDtoList = convertListToDto(itemList);
@@ -79,8 +79,8 @@ public class ItemController {
 
     }
 
-    public List<ItemDto> convertListToDto(List<Item> itemList){
-        return  itemList.stream()
+    public List<ItemDto> convertListToDto(List<Item> itemList) {
+        return itemList.stream()
                 .map(ItemMapper::map)
                 .toList();
     }

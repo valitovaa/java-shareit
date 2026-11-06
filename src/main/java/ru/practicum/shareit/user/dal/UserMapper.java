@@ -13,7 +13,7 @@ public class UserMapper {
     }
 
 
-    public static User map(UserDto userDto){
+    public static User map(UserDto userDto) {
         return new User(
                 userDto.getId(),
                 userDto.getName(),

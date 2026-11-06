@@ -8,7 +8,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 
 import java.util.List;
 
-public class ItemServiceImp implements ItemService{
+public class ItemServiceImp implements ItemService {
 
     ItemRepository itemRepository;
 

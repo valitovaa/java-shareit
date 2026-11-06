@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.repository;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;

@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -37,19 +38,23 @@ public class ItemServiceImp implements ItemService {
             throw new ForbiddenException("Нет прав на редактирование");
         }
 
-
         if (itemDto.getName() != null) {
+            if (itemDto.getName().isBlank()) {
+                throw new ConditionsNotMetException("Название вещи не может быть пустым");
+            }
             item.setName(itemDto.getName());
         }
 
         if (itemDto.getDescription() != null) {
+            if (itemDto.getDescription().isBlank()) {
+                throw new ConditionsNotMetException("Описание вещи не может быть пустым");
+            }
             item.setDescription(itemDto.getDescription());
         }
 
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
-
 
         itemRepository.updateItem(item);
 

@@ -48,7 +48,7 @@ public class UserServiceImp implements UserService {
             oldUser.setEmail(newUser.getEmail());
         }
 
-        return userRepository.update(newUser);
+        return userRepository.update(oldUser);
     }
 
     @Override

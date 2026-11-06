@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ItemDto> addItem(
-            @RequestBody ItemDto itemDto,
+            @RequestBody @Valid  ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
 

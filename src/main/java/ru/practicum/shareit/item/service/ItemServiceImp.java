@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 
 import java.util.List;
 
+@Service
 public class ItemServiceImp implements ItemService {
 
     ItemRepository itemRepository;

@@ -20,38 +20,38 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> findAll() {
+    public List<UserDto> findAll() {
         List<User> userList = userService.findAll();
 
         List<UserDto> userDtoList = userList.stream()
                 .map(UserMapper::map)
                 .toList();
 
-        return ResponseEntity.ok(userDtoList);
+        return userDtoList;
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
         User adddedUser = userService.addUser(user);
-        return ResponseEntity.ok(UserMapper.map(adddedUser));
+        return UserMapper.map(adddedUser);
 
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserDto> update(
+    public UserDto update(
             @PathVariable Long userId,
             @RequestBody UserDto userDto) {
         User user = UserMapper.map(userDto);
         user.setId(userId);
         User updatedUser = userService.update(userId, user);
-        return ResponseEntity.ok(UserMapper.map(updatedUser));
+        return UserMapper.map(updatedUser);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findUserById(@PathVariable @Positive Long id) {
+    public UserDto findUserById(@PathVariable @Positive Long id) {
         User user = userService.findUserById(id);
-        return ResponseEntity.ok(UserMapper.map(user));
+        return UserMapper.map(user);
     }
 
     @DeleteMapping("/{userId}")

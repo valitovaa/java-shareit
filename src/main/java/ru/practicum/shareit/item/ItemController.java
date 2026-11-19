@@ -1,10 +1,14 @@
 package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.dal.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
@@ -12,31 +16,27 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ItemController {
 
-    ItemService itemService;
-    UserService userService;
+    private final ItemService itemService;
+    private final UserService userService;
 
     @PostMapping
     public ItemDto addItem(
             @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-
         User owner = userService.findUserById(userId);
 
         Item item = ItemMapper.map(itemDto);
         item.setOwner(owner);
 
-        Item addeditem = itemService.addItem(item);
-        return ItemMapper.map(addeditem);
+        Item addedItem = itemService.addItem(item);
 
+        return mapToItemDto(addedItem);
     }
 
     @PatchMapping("/{itemId}")
@@ -45,45 +45,54 @@ public class ItemController {
             @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-
         Item item = itemService.updateItem(itemId, itemDto, userId);
-        return ItemMapper.map(item);
 
+        return mapToItemDto(item);
     }
-
 
     @GetMapping("/{itemId}")
     public ItemDto getItemById(@PathVariable Long itemId) {
         Item item = itemService.findItemById(itemId);
-        return ItemMapper.map(item);
+
+        return mapToItemDto(item);
     }
 
-
     @GetMapping
-    public List<ItemDto> findAllByOwnerId(
+    public List<OwnerItemDto> findAllByOwnerId(
             @RequestHeader("X-Sharer-User-Id") Long userId
     ) {
-
-        List<Item> itemList = itemService.findAllByOwnerId(userId);
-
-        return convertListToDto(itemList);
-
+        return itemService.findAllByOwnerId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
+        List<Item> items = itemService.searchItems(text);
 
-        List<Item> itemList = itemService.searchItems(text);
-
-        return convertListToDto(itemList);
-
+        return convertListToDto(items);
     }
 
-    public List<ItemDto> convertListToDto(List<Item> itemList) {
+    @PostMapping("/{itemId}/comment")
+    public CommentDto postComment(
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestBody @Valid CommentDto commentDto
+    ) {
+        return CommentMapper.map(
+                itemService.postComment(itemId, userId, commentDto.getText())
+        );
+    }
+
+    private ItemDto mapToItemDto(Item item) {
+        List<CommentDto> comments =
+                itemService.findCommentsByItemId(item.getId());
+
+        return ItemMapper.map(item, comments);
+    }
+
+    private List<ItemDto> convertListToDto(List<Item> itemList) {
         return itemList.stream()
-                .map(ItemMapper::map)
+                .map(this::mapToItemDto)
                 .toList();
     }
-
 
 }

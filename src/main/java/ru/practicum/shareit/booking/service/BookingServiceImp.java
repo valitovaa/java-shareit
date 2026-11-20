@@ -41,12 +41,14 @@ public class BookingServiceImp implements BookingService {
             throw new IllegalStateException("Статус бронирования уже изменён");
         }
 
-        if (approved == true) {
+        if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
         } else {
             booking.setStatus(BookingStatus.REJECTED);
         }
-        return booking;
+
+        return repository.save(booking);
+
     }
 
     @Override

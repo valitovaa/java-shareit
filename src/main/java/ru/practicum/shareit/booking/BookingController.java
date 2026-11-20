@@ -93,6 +93,10 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") BookingState state,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+
         List<Booking> res = bookingService.getBookingsByOwner(userId, state);
         return convertListToDto(res);
     }

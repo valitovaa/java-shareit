@@ -20,6 +20,8 @@ public interface ItemService {
 
     List<OwnerItemDto> findAllByOwnerId(Long userId);
 
+    ItemDto getItemById(Long itemId, Long userId);
+
     List<Item> searchItems(String text);
 
     List<CommentDto> findCommentsByItemId(Long itemId);

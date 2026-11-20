@@ -51,10 +51,11 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
-        Item item = itemService.findItemById(itemId);
-
-        return mapToItemDto(item);
+    public ItemDto getItemById(
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long userId
+    ) {
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping
@@ -82,11 +83,12 @@ public class ItemController {
         );
     }
 
+
     private ItemDto mapToItemDto(Item item) {
         List<CommentDto> comments =
                 itemService.findCommentsByItemId(item.getId());
 
-        return ItemMapper.map(item, comments);
+        return ItemMapper.map(item, comments, null, null);
     }
 
     private List<ItemDto> convertListToDto(List<Item> itemList) {

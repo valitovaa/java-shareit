@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dal.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingInfoDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
+import ru.practicum.shareit.item.dal.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.OwnerItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -184,5 +186,45 @@ public class ItemServiceImp implements ItemService {
         comment.setCreated(now);
 
         return commentRepository.save(comment);
+    }
+
+    @Override
+    public ItemDto getItemById(Long itemId, Long userId) {
+
+        Item item = findItemById(itemId);
+
+        List<CommentDto> comments = findCommentsByItemId(itemId);
+
+        BookingInfoDto lastBooking = null;
+        BookingInfoDto nextBooking = null;
+
+        if (item.getOwner().getId().equals(userId)) {
+
+            LocalDateTime now = LocalDateTime.now();
+
+            List<Booking> pastBookings =
+                    bookingRepository.findAllByItem_IdInAndStatusAndEndBeforeOrderByStartDesc(
+                            List.of(itemId),
+                            BookingStatus.APPROVED,
+                            now
+                    );
+
+            List<Booking> futureBookings =
+                    bookingRepository.findAllByItem_IdInAndStatusAndStartAfterOrderByStartAsc(
+                            List.of(itemId),
+                            BookingStatus.APPROVED,
+                            now
+                    );
+
+            if (!pastBookings.isEmpty()) {
+                lastBooking = BookingMapper.mapToInfo(pastBookings.get(0));
+            }
+
+            if (!futureBookings.isEmpty()) {
+                nextBooking = BookingMapper.mapToInfo(futureBookings.get(0));
+            }
+        }
+
+        return ItemMapper.map(item, comments, lastBooking, nextBooking);
     }
 }

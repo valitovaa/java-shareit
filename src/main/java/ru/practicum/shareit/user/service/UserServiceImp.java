@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EmailAlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImp implements UserService {
     public final UserRepository userRepository;
 
@@ -21,22 +23,23 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    @Transactional
     public User addUser(User user) {
 
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(user.getEmail())) {
             throw new EmailAlreadyExistsException("Email уже используется");
         }
-        return userRepository.addUser(user);
+        return userRepository.save(user);
     }
 
     @Override
     public User update(Long userId, User newUser) {
 
-        User oldUser = userRepository.findUserById(userId)
+        User oldUser = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         if (!oldUser.getEmail().equalsIgnoreCase(newUser.getEmail())
-                && userRepository.existsByEmail(newUser.getEmail())) {
+                && userRepository.existsByEmailIgnoreCase(newUser.getEmail())) {
             throw new EmailAlreadyExistsException("Email уже используется");
         }
 
@@ -48,16 +51,16 @@ public class UserServiceImp implements UserService {
             oldUser.setEmail(newUser.getEmail());
         }
 
-        return userRepository.update(oldUser);
+        return userRepository.save(oldUser);
     }
 
     @Override
     public User findUserById(Long id) {
-        return userRepository.findUserById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
     }
 
     @Override
     public void deleteUser(Long userId) {
-        userRepository.deleteUser(userId);
+        userRepository.deleteById(userId);
     }
 }

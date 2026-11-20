@@ -99,7 +99,7 @@ public class ItemServiceImp implements ItemService {
                 .toList();
 
         List<Booking> pastBookings =
-                bookingRepository.findAllByItem_IdInAndStatusAndStartBeforeOrderByStartDesc(
+                bookingRepository.findAllByItem_IdInAndStatusAndEndBeforeOrderByStartDesc(
                         itemIds, BookingStatus.APPROVED, now
                 );
 
@@ -139,6 +139,9 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public List<Item> searchItems(String text) {
+        if (text == null || text.isBlank()) {
+            return List.of();
+        }
         return itemRepository.search(text);
     }
 

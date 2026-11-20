@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.ConditionsNotMetException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 
@@ -23,10 +24,39 @@ public class BookingServiceImp implements BookingService {
     @Transactional
     @Override
     public Booking createBooking(Booking booking) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (!booking.getItem().getAvailable()) {
+            throw new ConditionsNotMetException(
+                    "Вещь недоступна для бронирования"
+            );
+        }
+
+        if (booking.getItem().getOwner().getId()
+                .equals(booking.getBooker().getId())) {
+            throw new ConditionsNotMetException(
+                    "Нельзя забронировать собственную вещь"
+            );
+        }
+
+        if (!booking.getStart().isAfter(now)) {
+            throw new ConditionsNotMetException(
+                    "Дата начала бронирования должна быть в будущем"
+            );
+        }
+
+        if (!booking.getEnd().isAfter(booking.getStart())) {
+            throw new ConditionsNotMetException(
+                    "Дата окончания должна быть позже даты начала"
+            );
+        }
+
         booking.setStatus(BookingStatus.WAITING);
         return repository.save(booking);
     }
 
+    @Transactional
     @Override
     public Booking bookingApproval(Long bookingId, Long userId, Boolean approved) {
 

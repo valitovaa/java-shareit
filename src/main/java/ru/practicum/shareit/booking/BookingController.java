@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dal.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -22,17 +23,29 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
-    BookingService bookingService;
-    ItemRepository itemRepository;
-    UserRepository userRepository;
+    private final BookingService bookingService;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+
+    public BookingController(
+            BookingService bookingService,
+            ItemRepository itemRepository,
+            UserRepository userRepository
+    ) {
+        this.bookingService = bookingService;
+        this.itemRepository = itemRepository;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping
-    public BookingDto createBooking(@Valid @RequestBody BookingDto bookingDto) {
+    public BookingDto createBooking(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @Valid @RequestBody BookingRequestDto bookingDto) {
 
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
-        User booker = userRepository.findById(bookingDto.getBookerId())
+        User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         Booking booking = BookingMapper.map(bookingDto, item, booker);
@@ -40,7 +53,6 @@ public class BookingController {
         Booking res = bookingService.createBooking(booking);
 
         return BookingMapper.map(res);
-
     }
 
     @PatchMapping("/{bookingId}")

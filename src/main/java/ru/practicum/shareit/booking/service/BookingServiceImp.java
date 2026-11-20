@@ -1,5 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -10,9 +13,14 @@ import ru.practicum.shareit.exception.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookingServiceImp implements BookingService {
-    BookingRepository repository;
 
+    private final BookingRepository repository;
+
+    @Transactional
     @Override
     public Booking createBooking(Booking booking) {
         booking.setStatus(BookingStatus.WAITING);

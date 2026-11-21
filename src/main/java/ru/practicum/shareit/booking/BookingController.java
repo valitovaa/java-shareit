@@ -8,11 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 
@@ -24,17 +19,11 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
 
     public BookingController(
-            BookingService bookingService,
-            ItemRepository itemRepository,
-            UserRepository userRepository
+            BookingService bookingService
     ) {
         this.bookingService = bookingService;
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
     }
 
     @PostMapping
@@ -42,15 +31,9 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @Valid @RequestBody BookingRequestDto bookingDto) {
 
-        Item item = itemRepository.findById(bookingDto.getItemId())
-                .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+        Booking booking = BookingMapper.map(bookingDto);
 
-        User booker = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-
-        Booking booking = BookingMapper.map(bookingDto, item, booker);
-
-        Booking res = bookingService.createBooking(booking);
+        Booking res = bookingService.createBooking(booking, bookingDto.getItemId(), userId);
 
         return BookingMapper.map(res);
     }
@@ -93,12 +76,10 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") BookingState state,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-
         List<Booking> res = bookingService.getBookingsByOwner(userId, state);
+
         return convertListToDto(res);
+
     }
 
     public List<BookingDto> convertListToDto(List<Booking> bookingList) {

@@ -1,3 +1,4 @@
+
 package ru.practicum.shareit.booking.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,29 +12,41 @@ import java.util.List;
 @Component
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findAllByBookerId(Long userId);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
-    List<Booking> findAllByBookerIdAndStatus(Long userId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(
+            Long userId, BookingStatus status
+    );
 
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfter(
-            Long userId, LocalDateTime end, LocalDateTime start);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+            Long userId, LocalDateTime start, LocalDateTime end
+    );
 
-    List<Booking> findAllByBookerIdAndEndBefore(
-            Long userId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(
+            Long userId, LocalDateTime now
+    );
 
-    List<Booking> findAllByBookerIdAndStartAfter(
-            Long userId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(
+            Long userId, LocalDateTime now
+    );
 
-    List<Booking> findAllByItem_Owner_IdAndStatus(Long userId, BookingStatus status);
+    List<Booking> findAllByItem_Owner_IdAndStatusOrderByStartDesc(
+            Long userId, BookingStatus status
+    );
 
-    List<Booking> findAllByItem_Owner_IdAndStartBeforeAndEndAfter(
-            Long userId, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByItem_Owner_IdAndStartBeforeAndEndAfterOrderByStartDesc(
+            Long userId, LocalDateTime start, LocalDateTime end
+    );
 
-    List<Booking> findAllByItem_Owner_IdAndEndBefore(Long userId, LocalDateTime now);
+    List<Booking> findAllByItem_Owner_IdAndEndBeforeOrderByStartDesc(
+            Long userId, LocalDateTime now
+    );
 
-    List<Booking> findAllByItem_Owner_IdAndStartAfter(Long userId, LocalDateTime now);
+    List<Booking> findAllByItem_Owner_IdAndStartAfterOrderByStartDesc(
+            Long userId, LocalDateTime now
+    );
 
-    List<Booking> findAllByItem_Owner_Id(Long userId);
+    List<Booking> findAllByItem_Owner_IdOrderByStartDesc(Long userId);
 
     List<Booking> findAllByItem_IdInAndStatusAndEndBeforeOrderByStartDesc(
             List<Long> itemIds,
@@ -41,7 +54,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             LocalDateTime now
     );
 
-    boolean existsByBookerIdAndItem_IdAndStatusAndEndBefore(Long userId, Long itemId, BookingStatus bookingStatus, LocalDateTime now);
+    boolean existsByBookerIdAndItem_IdAndStatusAndEndBefore(
+            Long userId,
+            Long itemId,
+            BookingStatus bookingStatus,
+            LocalDateTime now
+    );
 
-    List<Booking> findAllByItem_IdInAndStatusAndStartAfterOrderByStartAsc(List<Long> itemIds, BookingStatus bookingStatus, LocalDateTime now);
+    List<Booking> findAllByItem_IdInAndStatusAndStartAfterOrderByStartAsc(
+            List<Long> itemIds,
+            BookingStatus bookingStatus,
+            LocalDateTime now
+    );
 }
